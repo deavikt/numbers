@@ -1,6 +1,9 @@
 package main
 
-import "log"
+import (
+	"encoding/json"
+	"log"
+)
 
 type Number struct {
 	value int
@@ -11,5 +14,15 @@ func main() {
 		value: 1000,
 	}
 
-	log.Println(number.value)
+	convertToJson(number)
+}
+
+func convertToJson(number Number) {
+	data, err := json.Marshal(number)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	log.Printf("%s", data)
 }
