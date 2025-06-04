@@ -3,21 +3,24 @@ package main
 import (
 	"encoding/json"
 	"log"
+	"numbers/server"
 )
 
 type Number struct {
-	value int
+	Value int `json:"value"`
 }
 
 func main() {
 	number := Number{
-		value: 1000,
+		Value: 1000,
 	}
 
-	convertToJson(number)
+	ConvertToJson(number)
+
+	server.Start()
 }
 
-func convertToJson(number Number) {
+func ConvertToJson(number Number) {
 	data, err := json.Marshal(number)
 
 	if err != nil {
