@@ -15,7 +15,7 @@ const (
 	port     string = ":8080"
 )
 
-var numbers = make([]Number, 0)
+var numbers []Number = nil
 
 func Start() {
 	http.HandleFunc(dataPath, requestHandler)
@@ -59,16 +59,21 @@ func handlePOST(r *http.Request) {
 	if err != nil {
 		log.Println("incorrect input")
 	} else {
-		addNumber(intNumber, &numbers)
+		addNumber(intNumber)
 	}
 }
 
 func handleDELETE() {
 	log.Println("DELETE request")
+	deleteNumber()
 }
 
-func addNumber(number int, numbers *[]Number) {
-	*numbers = append(*numbers, convertIntToNumber(number))
+func addNumber(number int) {
+	numbers = append(numbers, convertIntToNumber(number))
+}
+
+func deleteNumber() {
+	numbers = nil
 }
 
 func convertIntToNumber(number int) Number {
