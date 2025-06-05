@@ -6,16 +6,10 @@ import (
 	"strconv"
 )
 
-type Number struct {
-	Value int `json:"value"`
-}
-
 const (
 	dataPath string = "/data"
 	port     string = ":8080"
 )
-
-var numbers []Number = nil
 
 func Start() {
 	http.HandleFunc(dataPath, requestHandler)
@@ -42,6 +36,7 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 
 func handleGET() {
 	log.Println("GET request")
+	getNumbersSum()
 }
 
 func handlePOST(r *http.Request) {
@@ -65,17 +60,5 @@ func handlePOST(r *http.Request) {
 
 func handleDELETE() {
 	log.Println("DELETE request")
-	deleteNumber()
-}
-
-func addNumber(number int) {
-	numbers = append(numbers, convertIntToNumber(number))
-}
-
-func deleteNumber() {
-	numbers = nil
-}
-
-func convertIntToNumber(number int) Number {
-	return Number{Value: number}
+	deleteNumbers()
 }
