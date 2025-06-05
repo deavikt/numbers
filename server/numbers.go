@@ -2,8 +2,6 @@ package server
 
 import "log"
 
-var numbers []Number = nil
-
 type Number struct {
 	Value int `json:"value"`
 }
@@ -12,28 +10,24 @@ type NumbersSum struct {
 	Sum int `json:"sum"`
 }
 
-func addNumber(number int) {
-	numbers = append(numbers, convertIntToNumber(number))
+func (srv *Server) addNumber(number int) {
+	srv.Numbers = append(srv.Numbers, number)
 	log.Println("number was succussfully added")
 }
 
-func deleteNumbers() {
-	numbers = nil
+func (srv *Server) deleteNumbers() {
+	srv.Numbers = nil
 	log.Println("numbers were succussfully deleted")
 }
 
-func getNumbersSum() int {
+func (srv *Server) getNumbersSum() int {
 	sum := 0
 
-	for number := range numbers {
+	for number := range srv.Numbers {
 		sum += number
 	}
 
 	log.Println("numbers sum = ", sum)
 
 	return sum
-}
-
-func convertIntToNumber(number int) Number {
-	return Number{Value: number}
 }

@@ -5,5 +5,11 @@ import (
 )
 
 func main() {
-	server.Start()
+	srv := server.Server{
+		Numbers:  nil,
+		Port:     ":8081",
+		DataPath: "/data",
+	}
+
+	srv.Start()
 }

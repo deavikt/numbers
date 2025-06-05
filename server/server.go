@@ -1,64 +1,74 @@
 package server
 
 import (
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
-	"strconv"
 )
 
-const (
-	dataPath string = "/data"
-	port     string = ":8080"
-)
+type Server struct {
+	Numbers  []int
+	Port     string
+	DataPath string
+}
 
-func Start() {
-	http.HandleFunc(dataPath, requestHandler)
+func (srv *Server) Start() {
+	http.HandleFunc("/data", srv.requestHandler)
 
-	err := http.ListenAndServe(port, nil)
+	err := http.ListenAndServe(srv.Port, nil)
 
 	if err != nil {
 		log.Println("server startup error: ", err)
 	}
 }
 
-func requestHandler(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) requestHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		handleGET()
+		srv.handleGET(w)
 	case http.MethodPost:
-		handlePOST(r)
+		srv.handlePOST(r)
 	case http.MethodDelete:
-		handleDELETE()
+		srv.handleDELETE()
 	default:
 		http.Error(w, "This request method isn't supported", http.StatusMethodNotAllowed)
 	}
 }
 
-func handleGET() {
-	log.Println("GET request")
-	getNumbersSum()
-}
+func (srv *Server) handleGET(w http.ResponseWriter) {
+	sum := NumbersSum{
+		Sum: srv.getNumbersSum(),
+	}
 
-func handlePOST(r *http.Request) {
-	log.Println("POST request")
-
-	err := r.ParseForm()
+	raw, err := json.Marshal(sum)
 
 	if err != nil {
 		log.Println(err)
 	}
 
-	stringNumber := r.FormValue("value")
-	intNumber, err := strconv.Atoi(stringNumber)
+	w.Write(raw)
+}
+
+func (srv *Server) handlePOST(r *http.Request) {
+	var number Number
+
+	log.Println("POST request")
+
+	raw, err := io.ReadAll(r.Body)
 
 	if err != nil {
-		log.Println("incorrect input")
+		log.Println(err)
+	}
+
+	if err := json.Unmarshal(raw, &number); err != nil {
+		log.Println(err)
 	} else {
-		addNumber(intNumber)
+		srv.addNumber(number.Value)
+		log.Println("number was successfully added")
 	}
 }
 
-func handleDELETE() {
-	log.Println("DELETE request")
-	deleteNumbers()
+func (srv *Server) handleDELETE() {
+	srv.deleteNumbers()
 }
