@@ -2,14 +2,6 @@ package server
 
 import "log"
 
-type Number struct {
-	Value int `json:"value"`
-}
-
-type NumbersSum struct {
-	Sum int `json:"sum"`
-}
-
 func (srv *Server) addNumber(number int) {
 	srv.Numbers = append(srv.Numbers, number)
 	log.Println("number was successfully added")

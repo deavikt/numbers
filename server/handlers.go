@@ -7,12 +7,6 @@ import (
 	"net/http"
 )
 
-type Server struct {
-	Numbers  []int
-	Port     string
-	DataPath string
-}
-
 func (srv *Server) Start() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/data", srv.requestHandler)
@@ -41,6 +35,8 @@ func (srv *Server) requestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (srv *Server) handleGET(w http.ResponseWriter) {
+	log.Println("GET request")
+
 	sum := NumbersSum{
 		Sum: srv.getNumbersSum(),
 	}
@@ -75,5 +71,6 @@ func (srv *Server) handlePOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func (srv *Server) handleDELETE() {
+	log.Println("DELETE request")
 	srv.deleteNumbers()
 }
