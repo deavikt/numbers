@@ -14,6 +14,8 @@ type Server struct {
 }
 
 func (srv *Server) Start() {
+	//mux := http.NewServeMux()
+
 	http.HandleFunc("/data", srv.requestHandler)
 
 	err := http.ListenAndServe(srv.Port, nil)
@@ -28,7 +30,7 @@ func (srv *Server) requestHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		srv.handleGET(w)
 	case http.MethodPost:
-		srv.handlePOST(r)
+		srv.handlePOST(w, r)
 	case http.MethodDelete:
 		srv.handleDELETE()
 	default:
@@ -50,7 +52,7 @@ func (srv *Server) handleGET(w http.ResponseWriter) {
 	w.Write(raw)
 }
 
-func (srv *Server) handlePOST(r *http.Request) {
+func (srv *Server) handlePOST(w http.ResponseWriter, r *http.Request) {
 	var number Number
 
 	log.Println("POST request")
@@ -65,8 +67,9 @@ func (srv *Server) handlePOST(r *http.Request) {
 		log.Println(err)
 	} else {
 		srv.addNumber(number.Value)
-		log.Println("number was successfully added")
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (srv *Server) handleDELETE() {

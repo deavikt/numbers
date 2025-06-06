@@ -12,18 +12,18 @@ type NumbersSum struct {
 
 func (srv *Server) addNumber(number int) {
 	srv.Numbers = append(srv.Numbers, number)
-	log.Println("number was succussfully added")
+	log.Println("number was successfully added")
 }
 
 func (srv *Server) deleteNumbers() {
 	srv.Numbers = nil
-	log.Println("numbers were succussfully deleted")
+	log.Println("numbers were successfully deleted")
 }
 
 func (srv *Server) getNumbersSum() int {
 	sum := 0
 
-	for number := range srv.Numbers {
+	for _, number := range srv.Numbers {
 		sum += number
 	}
 
