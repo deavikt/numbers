@@ -14,11 +14,13 @@ type Server struct {
 }
 
 func (srv *Server) Start() {
-	//mux := http.NewServeMux()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/data", srv.requestHandler)
 
-	http.HandleFunc("/data", srv.requestHandler)
+	fileServer := http.FileServer(http.Dir("./ui/"))
+	mux.Handle("/", http.StripPrefix("/", fileServer))
 
-	err := http.ListenAndServe(srv.Port, nil)
+	err := http.ListenAndServe(srv.Port, mux)
 
 	if err != nil {
 		log.Println("server startup error: ", err)
