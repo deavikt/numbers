@@ -8,13 +8,10 @@ import (
 )
 
 func (srv *Server) Start() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/data", srv.requestHandler)
+	srv.Mux.HandleFunc(srv.DataPath, srv.requestHandler)
+	srv.Mux.Handle("/", http.StripPrefix("/", srv.FileServer))
 
-	fileServer := http.FileServer(http.Dir("./ui/"))
-	mux.Handle("/", http.StripPrefix("/", fileServer))
-
-	err := http.ListenAndServe(srv.Port, mux)
+	err := http.ListenAndServe(srv.Port, srv.Mux)
 
 	if err != nil {
 		log.Println("server startup error: ", err)
@@ -41,7 +38,7 @@ func (srv *Server) handleGET(w http.ResponseWriter) {
 		Sum: srv.getNumbersSum(),
 	}
 
-	raw, err := json.Marshal(sum)
+	raw, err := json.Marshal(&sum)
 
 	if err != nil {
 		log.Println(err)
