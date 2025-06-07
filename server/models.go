@@ -3,11 +3,11 @@ package server
 import "net/http"
 
 type Server struct {
-	Numbers    []int
-	Mux        *http.ServeMux
-	FileServer http.Handler
-	Port       string
-	DataPath   string
+	Numbers  []int
+	Mux      *http.ServeMux
+	Port     string
+	HomePath string
+	DataPath string
 }
 
 type Number struct {

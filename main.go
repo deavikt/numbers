@@ -5,14 +5,13 @@ import (
 	"numbers/server"
 )
 
-func main() {
-	srv := server.Server{
-		Numbers:    nil,
-		Mux:        http.NewServeMux(),
-		FileServer: http.FileServer(http.Dir("./ui/")),
-		Port:       ":8081",
-		DataPath:   "/data",
-	}
+const (
+	port     = ":8000"
+	homePath = "/"
+	dataPath = "/data"
+)
 
+func main() {
+	srv := server.Create(nil, http.NewServeMux(), port, homePath, dataPath)
 	srv.Start()
 }

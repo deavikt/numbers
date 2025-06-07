@@ -4,7 +4,7 @@ import "log"
 
 func (srv *Server) addNumber(number int) {
 	srv.Numbers = append(srv.Numbers, number)
-	log.Println("number was successfully added")
+	log.Printf("number %d was successfully added", number)
 }
 
 func (srv *Server) deleteNumbers() {

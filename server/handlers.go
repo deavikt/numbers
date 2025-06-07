@@ -7,9 +7,22 @@ import (
 	"net/http"
 )
 
+func Create(
+	numbers []int,
+	mux *http.ServeMux,
+	port, homePath, dataPath string) Server {
+
+	return Server{
+		Numbers:  numbers,
+		Mux:      mux,
+		Port:     port,
+		HomePath: homePath,
+		DataPath: dataPath,
+	}
+}
+
 func (srv *Server) Start() {
-	srv.Mux.HandleFunc(srv.DataPath, srv.requestHandler)
-	srv.Mux.Handle("/", http.StripPrefix("/", srv.FileServer))
+	srv.setUpMux()
 
 	err := http.ListenAndServe(srv.Port, srv.Mux)
 
@@ -18,22 +31,36 @@ func (srv *Server) Start() {
 	}
 }
 
+func (srv *Server) setUpMux() {
+	fileServerHandler := http.FileServer(http.Dir("./static/"))
+
+	srv.Mux.Handle(srv.HomePath, http.StripPrefix(srv.HomePath, fileServerHandler))
+	srv.Mux.HandleFunc(srv.DataPath, srv.requestHandler)
+}
+
 func (srv *Server) requestHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		srv.handleGET(w)
+		{
+			log.Println("GET request")
+			srv.postNumbersSumJSON(w)
+		}
 	case http.MethodPost:
-		srv.handlePOST(w, r)
+		{
+			log.Println("POST request")
+			srv.getNumberJSON(r)
+		}
 	case http.MethodDelete:
-		srv.handleDELETE()
+		{
+			log.Println("DELETE request")
+			srv.deleteNumbers()
+		}
 	default:
 		http.Error(w, "This request method isn't supported", http.StatusMethodNotAllowed)
 	}
 }
 
-func (srv *Server) handleGET(w http.ResponseWriter) {
-	log.Println("GET request")
-
+func (srv *Server) postNumbersSumJSON(w http.ResponseWriter) {
 	sum := NumbersSum{
 		Sum: srv.getNumbersSum(),
 	}
@@ -47,27 +74,20 @@ func (srv *Server) handleGET(w http.ResponseWriter) {
 	w.Write(raw)
 }
 
-func (srv *Server) handlePOST(w http.ResponseWriter, r *http.Request) {
+func (srv *Server) getNumberJSON(r *http.Request) {
 	var number Number
 
-	log.Println("POST request")
+	raw, readingErr := io.ReadAll(r.Body)
 
-	raw, err := io.ReadAll(r.Body)
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	if err := json.Unmarshal(raw, &number); err != nil {
-		log.Println(err)
+	if readingErr != nil {
+		log.Println(readingErr)
 	} else {
-		srv.addNumber(number.Value)
+		marshallingErr := json.Unmarshal(raw, &number)
+
+		if marshallingErr != nil {
+			log.Println(marshallingErr)
+		} else {
+			srv.addNumber(number.Value)
+		}
 	}
-
-	w.WriteHeader(http.StatusOK)
-}
-
-func (srv *Server) handleDELETE() {
-	log.Println("DELETE request")
-	srv.deleteNumbers()
 }

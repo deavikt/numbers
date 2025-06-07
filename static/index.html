@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <title>Числа</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+
+    <body>
+        <div id="numbers_info">
+            <form method="post" id="number_input_form">
+                <label for="number_input_field" >Введите число</label><br>
+                <div id="number_input">
+                    <input type="number" id="number_input_field" name="number" required>
+                    <button type="submit" id="number_input_button">Ввести</button>
+                </div> 
+            </form> 
+
+            <div id="numbers_sum">
+                <div id="numbers_sum_title">Сумма чисел</div>
+                <div id="numbers_sum_field"></div>
+            </div>
+
+            <button id="delete_numbers_button">Удалить все числа</button>
+        </div>
+
+        <script type="application/javascript" src="script.js"></script>
+    </body>
+</html>
